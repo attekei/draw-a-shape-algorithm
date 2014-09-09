@@ -33,7 +33,7 @@ Algorithm can be easily used from an Android app:
     .scaleByMean()
     .downsample();
   
-  PointCloud matchingDrawedCloud = drawedCloud
+  PointCloud matchingDrawedCloud = normalizedDrawedCloud
     .runCMAES(normalizedExampleCloud);
 
   int[] newPixels = matchingDrawedCloud.toImagePixelArray(Color.WHITE, Color.BLACK);
