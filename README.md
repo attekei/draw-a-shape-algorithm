@@ -7,7 +7,7 @@ drawing-app-algorithm
 
 An point cloud based algorithm for comparing similarity of two pictures. Written in Scala and prepared for interoperability with Java. Features include:
 
-* Manipulation of the first picture by translating, rotating and scaling it to match the second picture as well as possible. The target is to make those two pictures as easily comparable.
+* Manipulation of the first picture by translating, rotating and scaling it to match the second picture as well as possible. The target is to make those two pictures easily comparable.
 * Comparision algorithm that takes two images and returns a number in scale 0-100 telling how similar those pictures are.
 
 Created for the needs of master's thesis of Ilmari Arnkil.
