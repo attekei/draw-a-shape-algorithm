@@ -1,6 +1,8 @@
 drawing-app-algorithm
 =====================
 
+## About
+
 *The development of algorithm is still in early phase. The text below describes the intended functionality.*
 
 An point cloud based algorithm for comparing similarity of two pictures. Written in Scala and prepared for interoperability with Java. Features include:
@@ -10,7 +12,7 @@ An point cloud based algorithm for comparing similarity of two pictures. Written
 
 Created for the needs of master's thesis of Ilmari Arnkil.
 
-_Example of use_
+## Example of use
 
 Algorithm can be easily used from an Android app:
 
@@ -39,4 +41,12 @@ Algorithm can be easily used from an Android app:
   
   // show match result etc.
 ```
+
+## Setup
+
+Use `sbt gen-idea` to update dependencies etc in IntelliJ Idea. Run `sbt build` to build. Maybe different build configurations for normal build and Android library coming in future.
+
+## Licence
+
+We should decide the licence ASAP. :)
 
