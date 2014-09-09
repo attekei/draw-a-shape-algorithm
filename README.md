@@ -15,7 +15,7 @@ _Example of use_
 Algorithm can be easily used from an Android app:
 
 ```java
-  Array drawedPixels, examplePixels;
+  int[] drawedPixels, examplePixels;
   canvasView.getDrawingCache().getPixels(drawedPixels);
   exampleView.getDrawingCache().getPixels(examplePixels);
 
@@ -31,12 +31,12 @@ Algorithm can be easily used from an Android app:
     .scaleByMean()
     .downsample();
   
-  PointCloud matchingDrawedCloud
+  PointCloud matchingDrawedCloud = drawedCloud
     .runCMAES(normalizedExampleCloud);
 
-  int newPixels = matchingDrawedCloud.toImagePixelArray(Color.WHITE, Color.BLACK);
+  int[] newPixels = matchingDrawedCloud.toImagePixelArray(Color.WHITE, Color.BLACK);
   int matchResult = matchingDrawedCloud.compareTo(normalizedExampleCloud);
   
-  ...
+  // show match result etc.
 ```
 
