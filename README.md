@@ -44,9 +44,31 @@ Algorithm can be easily used from an Android app:
 
 ## Setup
 
-Use `sbt gen-idea` to update dependencies etc in IntelliJ Idea. Run `sbt build` to build. Maybe different build configurations for normal build and Android library coming in future.
+Intellij IDEA is recommended IDE for algorithm development.
+
+### Clone repository
+
+Intellij IDEA toolbar: `VCS -> Checkout from Version Control -> Git` Repo address is `https://github.com/atk-partio/ilmomasiina.git`.
+
+### Install sbt-android
+
+Install sbt-android to local Ivy repository: 
+
+```
+  git clone https://github.com/jberkel/android-plugin
+  cd android-plugin
+  sbt publish-local
+```
+
+### Update Intellij IDEA project settings & dependencies
+
+Run `sbt gen-idea` in project folder.
+
+### Build
+
+Run `sbt combile` to build the JAR file. Copy it from `target/xxx/xxx/PointCloud.jar` to Android project classpath.
 
 ## Licence
 
-We should decide the licence ASAP. :)
+We should decide licence for source code ASAP. :)
 
