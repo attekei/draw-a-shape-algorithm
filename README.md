@@ -1,6 +1,6 @@
 drawing-app-algorithm
 =====================
-
+[![Build Status](https://travis-ci.org/attrck/drawing-app-algorithm.svg?branch=master)](https://travis-ci.org/attrck/drawing-app-algorithm) [![Coverage Status](https://img.shields.io/coveralls/attrck/drawing-app-algorithm.svg)](https://coveralls.io/r/attrck/drawing-app-algorithm)
 ## About
 
 *The development of algorithm is still in early phase. The text below describes the intended functionality.*

@@ -1,3 +1,6 @@
+import scoverage.ScoverageSbtPlugin.instrumentSettings
+import org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+
 name := "drawing-app-algoritm"
  
 version := "1.0"
@@ -14,3 +17,5 @@ ProguardKeys.options in Proguard ++= Seq(
   "-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable",
   "-dontobfuscate",
   "-keep class studies.algorithms.** { *; }")
+
+instrumentSettings
