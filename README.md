@@ -44,27 +44,19 @@ Algorithm can be easily used from an Android app:
 
 ## Setup
 
-Intellij IDEA is recommended IDE for algorithm development.
-
-### Clone repository
+#### Clone repository
 
 Intellij IDEA toolbar: `VCS -> Checkout from Version Control -> Git` Repo address is `https://github.com/atk-partio/ilmomasiina.git`.
 
-### Install sbt-android
+#### Install sbt and dependencies
 
-Install sbt-android to local Ivy repository: 
+[Install sbt](http://www.scala-sbt.org/0.13/tutorial/Setup.html). Then run `sbt update` in project folder to install dependencies.
 
-```
-  git clone https://github.com/jberkel/android-plugin
-  cd android-plugin
-  sbt publish-local
-```
-
-### Update Intellij IDEA project settings & dependencies
+#### Create Intellij IDEA project
 
 Run `sbt gen-idea` in project folder.
 
-### Build for Android
+#### Build for Android
 
 Run `sbt proguard:proguard` to build the JAR file. Copy it from `target/scala-2.11/proguard/drawing-app-algoritm_2.11-1.0.jar` to Android project `app/lib` directory and replace the existing jar.
 
