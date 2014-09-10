@@ -1,23 +1,18 @@
 package studies.algorithms
-import breeze.linalg._
-import breeze.numerics._
-import breeze.stats.mean
 
+class PointCloud(private val points: List[Vector2d]) {
+  def getPoints = points.map(point => (point.x, point.y))
 
-
-class PointCloud(private val points: List[DenseVector[Double]]) {
-  def getPoints = points.map(point => (point(0).toInt, point(1).toInt))
-
-  def gravityCenter = points.reduce(_ + _) :*= (1.0 / points.length)
+  def gravityCenter = points.reduce(_ + _) * (1.0 / points.length)
 
   def centerToOrigoByGravity: PointCloud = {
     new PointCloud(points.map(_ - gravityCenter))
   }
 
   def calculateSquareError(other: PointCloud): Double = {
-    def vectorPowerToTwo(v: DenseVector[Double]) = v(0) * v(0) + v(1) * v(1)
+    def vectorPowerToTwo(v: Vector2d) = v.x * v.x + v.y * v.y
 
-    def minDeltaToAnyGroupPoint(point: DenseVector[Double], group: PointCloud): Double = {
+    def minDeltaToAnyGroupPoint(point: Vector2d, group: PointCloud): Double = {
       // TODO check from Perttu how this is intended to be implemented
       group.points.map(otherPoint => vectorPowerToTwo(point - otherPoint)).min
     }
@@ -26,15 +21,15 @@ class PointCloud(private val points: List[DenseVector[Double]]) {
     minDeltas.sum / points.length
   }
 
-  def downsample(samples: Int = 100): PointCloud = {
+  def downSample(samples: Int = 100): PointCloud = {
     new PointCloud(util.Random.shuffle(points).take(samples))
   }
 
-  def width = lengthAt(0)
-  def height = lengthAt(1)
+  def width = lengthAt(_.x)
+  def height = lengthAt(_.y)
 
-  def lengthAt(index: Int): Double = {
-    val values = points.map(_(index))
+  def lengthAt(func: Vector2d => Double): Double = {
+    val values = points.map(func)
     values.max - values.min
   }
 
@@ -43,7 +38,7 @@ class PointCloud(private val points: List[DenseVector[Double]]) {
     val pixels = Array.fill((width * height).toInt)(emptyColor)
 
     for (point <- points) {
-      val position: Int = (width * point(1) + point(0)).toInt
+      val position: Int = (width * point.y + point.x).toInt
       pixels(position) = pointColor
     }
 
@@ -57,7 +52,7 @@ object PointCloud {
       pixels
         .zipWithIndex
         .filter { case (value, _) => value == pointColor }
-        .map { case (_, index) => DenseVector(index.toDouble % imageWidth, index.toDouble / imageWidth) }
+        .map { case (_, index) => new Vector2d((index % imageWidth).toDouble, (index / imageWidth).toDouble) }
         .toList
     )
   }
