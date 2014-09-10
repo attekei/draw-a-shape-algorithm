@@ -64,9 +64,9 @@ Install sbt-android to local Ivy repository:
 
 Run `sbt gen-idea` in project folder.
 
-### Build
+### Build for Android
 
-Run `sbt combile` to build the JAR file. Copy it from `target/xxx/xxx/PointCloud.jar` to Android project classpath.
+Run `sbt proguard:proguard` to build the JAR file. Copy it from `target/scala-2.11/proguard/drawing-app-algoritm_2.11-1.0.jar` to Android project `app/lib` directory and replace the existing jar.
 
 ## Licence
 
