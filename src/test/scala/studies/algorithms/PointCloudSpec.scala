@@ -49,14 +49,14 @@ class PointCloudSpec extends Specification {
     "have 0,0 as gravity center" in new cloudFromPixels {
       // sanity check
       val oldCenter = cloud.gravityCenter
-      oldCenter(0) should not beCloseTo(0, 0.01)
-      oldCenter(1) should not beCloseTo(0, 0.01)
+      oldCenter.x should not beCloseTo(0, 0.01)
+      oldCenter.y should not beCloseTo(0, 0.01)
 
       val centeredCloud = cloud.centerToOrigoByGravity
 
       val center = centeredCloud.gravityCenter
-      center(0) should beCloseTo(0, 0.01)
-      center(1) should beCloseTo(0, 0.01)
+      center.x should beCloseTo(0, 0.01)
+      center.y should beCloseTo(0, 0.01)
 
       println(centeredCloud.getPoints)
     }
