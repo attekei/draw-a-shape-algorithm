@@ -1,13 +1,11 @@
 package studies.algorithms
 
-class PointCloud(private val points: List[Vector2d]) {
-  def getPoints = points.map(point => (point.x, point.y))
-
-  def gravityCenter = points.reduce(_ + _) * (1.0 / points.length)
-
+case class PointCloud(val points: List[Vector2d]) {
   def centerToOrigoByGravity: PointCloud = {
     new PointCloud(points.map(_ - gravityCenter))
   }
+
+  lazy val gravityCenter = points.reduce(_ + _) * (1.0 / points.length)
 
   def calculateSquareError(other: PointCloud): Double = {
     def vectorPowerToTwo(v: Vector2d) = v.x * v.x + v.y * v.y
@@ -28,7 +26,7 @@ class PointCloud(private val points: List[Vector2d]) {
   def width = lengthAt(_.x)
   def height = lengthAt(_.y)
 
-  def lengthAt(func: Vector2d => Double): Double = {
+  private def lengthAt(func: Vector2d => Double): Double = {
     val values = points.map(func)
     values.max - values.min
   }

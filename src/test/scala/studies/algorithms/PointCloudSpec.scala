@@ -6,9 +6,8 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 class PointCloudSpec extends Specification {
-
   trait cloudFromPixels extends Scope {
-    def indexAt(x: Int, y: Int) = y * width + x
+    def indexAt(pos: Vector2d) = pos.y.toInt * width + pos.x.toInt
 
     val whiteColor = Color.WHITE.getRGB()
     val blackColor = Color.BLACK.getRGB()
@@ -17,18 +16,20 @@ class PointCloudSpec extends Specification {
     val height = 200
 
     val pixels = Array.fill(width * height)(whiteColor)
-    val blackPixelPositions = List((10, 170), (150, 100), (270, 50))
+    val blackPixelPositions = List(Vector2d(10, 170), Vector2d(150, 100), Vector2d(270, 50))
 
     blackPixelPositions.foreach(pos => {
-      pixels(indexAt(pos._1, pos._2)) = blackColor
+      pixels(indexAt(pos)) = blackColor
     })
 
     val cloud = PointCloud.fromImagePixelArray(pixels, width, blackColor)
   }
 
-  "Point cloud creation" should {
+  trait cloudFromVectors(vectors: List[Vector2d]) extends
+
+  "Point cloud creation from pixels" should {
     "produce correct points" in new cloudFromPixels {
-      blackPixelPositions.toSet mustEqual cloud.getPoints.toSet
+      blackPixelPositions.toSet mustEqual cloud.points.toSet
     }
   }
 
@@ -57,8 +58,16 @@ class PointCloudSpec extends Specification {
       val center = centeredCloud.gravityCenter
       center.x should beCloseTo(0, 0.01)
       center.y should beCloseTo(0, 0.01)
+    }
+  }
 
-      println(centeredCloud.getPoints)
+  "Point cloud downsampling" should {
+    "should return cloud with correct point count" in new cloudFromPixels {
+      cloud.downSample(2).points.length shouldEqual 2
+    }
+
+    "not downsample if point count is low" in new cloudFromPixels {
+      cloud.downSample(100).points.toSet shouldEqual cloud.points.toSet
     }
   }
 }

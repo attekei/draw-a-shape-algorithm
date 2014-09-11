@@ -3,7 +3,7 @@ package studies.algorithms
 import scala.math.{acos, sqrt}
 
 //Vector in 2d space
-class Vector2d(val x: Double, val y: Double) {
+case class Vector2d(val x: Double, val y: Double) {
   //Reflects vector by given vector
   def reflectBy(normal: Vector2d) = {
     normal * (2 * this.dotProduct(normal)) - this
