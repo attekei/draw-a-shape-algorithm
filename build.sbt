@@ -8,6 +8,8 @@ libraryDependencies += "org.specs2" %% "specs2" % "2.4.2" % "test"
 
 libraryDependencies += "com.xeiam.xchart" % "xchart" % "2.3.0"
 
+libraryDependencies += "org.apache.commons" %	"commons-math3"	% "3.3"
+
 proguardSettings
 
 ProguardKeys.options in Proguard ++= Seq(

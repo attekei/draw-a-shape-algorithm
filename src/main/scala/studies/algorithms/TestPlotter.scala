@@ -17,6 +17,8 @@ object TestPlotter extends App {
 
   val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud)
 
+  alignedDrawnCloud.downsample(100).runCMAES(modelCloud)
+
   drawScatterChart(alignedDrawnCloud.points)
 
   def getCenteredCloud(imagePath: String) = {

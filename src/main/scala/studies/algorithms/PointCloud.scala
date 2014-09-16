@@ -1,5 +1,14 @@
 package studies.algorithms
 
+import java.util.Random
+
+import org.apache.commons.math3.analysis.MultivariateFunction
+import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizer
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.CMAESOptimizer.{Sigma, PopulationSize}
+import org.apache.commons.math3.optim._
+import org.apache.commons.math3.random.RandomGeneratorFactory
+
 import scala.math._
 
 case class PointCloud(points: List[Vector2d]) {
@@ -12,13 +21,14 @@ case class PointCloud(points: List[Vector2d]) {
   def squareErrorTo(other: PointCloud): Double = {
     def vectorPowerToTwo(v: Vector2d) = v.x * v.x + v.y * v.y
 
-    def minDeltaToAnyGroupPoint(point: Vector2d, group: PointCloud): Double = {
-      // TODO check from Perttu how this is intended to be implemented
-      group.points.map(otherPoint => vectorPowerToTwo(point - otherPoint)).min
+    def deltaToClosestPointInCloud(point: Vector2d, cloud: PointCloud): Double = {
+      cloud.points.map(otherPoint => vectorPowerToTwo(point - otherPoint)).min
     }
 
-    val minDeltas = this.points.map(p => minDeltaToAnyGroupPoint(p, other))
-    minDeltas.sum / points.length
+    val thisMinDeltas = this.points.map(p => deltaToClosestPointInCloud(p, other))
+    val otherMinDeltas = other.points.map(p => deltaToClosestPointInCloud(p, this))
+
+    (thisMinDeltas.sum + otherMinDeltas.sum) / points.length
   }
 
   def downsample(samples: Int = 100): PointCloud = {
@@ -35,7 +45,6 @@ case class PointCloud(points: List[Vector2d]) {
 
   def alignByStandardDeviation(other: PointCloud): PointCloud = {
     val scale = other.standardDeviation /: this.standardDeviation
-    println("Scaling calculated by standard deviation:", scale)
     PointCloud(points.map(_ *: scale))
   }
 
@@ -59,6 +68,47 @@ case class PointCloud(points: List[Vector2d]) {
     }
 
     pixels
+  }
+
+  def runCMAES(model: PointCloud): CMAESGuess = {
+    val optimizer = new CMAESOptimizer(
+      10,     // Maximal number of iterations.
+      0.0001,  // Whether to stop if objective function value is smaller than stopFitness.
+      true,    // isActiveCMA. Chooses the covariance matrix update method.
+      5,       // Number of initial iterations, where the covariance matrix remains diagonal.
+      3,       // Determines how often new random objective variables are generated in case they are out of bounds.
+      RandomGeneratorFactory.createRandomGenerator(new Random()), // Random generator.
+      false,   // Whether statistic data is collected.
+      new SimpleValueChecker(0.001, 0.001) // Convergence checker.
+    )
+
+    val objectiveFunction = new ObjectiveFunction(new MultivariateFunction {
+      override def value(p1: Array[Double]): Double = {
+        val guess = CMAESGuess.fromDoubleArray(p1)
+        val newCloud = transformByCMAESGuess(guess)
+        newCloud.squareErrorTo(model)
+      }
+    })
+
+    val result = optimizer.optimize(
+      objectiveFunction,
+      new MaxEval(100000),
+      new InitialGuess(CMAESGuess.initialGuess.toDoubleArray),
+      new SimpleBounds(CMAESGuess.lowerBounds.toDoubleArray, CMAESGuess.upperBounds.toDoubleArray),
+      new Sigma(CMAESGuess.sigma.toDoubleArray),
+      new PopulationSize(9)
+    )
+
+    println(result)
+
+    // TODO real return value
+    CMAESGuess.initialGuess
+  }
+
+  def transformByCMAESGuess(guess: CMAESGuess): PointCloud = {
+    val translatedPoints = this.points.map(_ + guess.translation)
+    val scaledPoints = translatedPoints.map(_ *: guess.scale)
+    PointCloud(scaledPoints)
   }
 }
 
