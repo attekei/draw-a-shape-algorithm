@@ -1,13 +1,15 @@
 package studies.algorithms
 
-case class PointCloud(val points: List[Vector2d]) {
-  def centerToOrigoByGravity: PointCloud = {
-    new PointCloud(points.map(_ - gravityCenter))
+import scala.math._
+
+case class PointCloud(points: List[Vector2d]) {
+  def centerByMean: PointCloud = {
+    PointCloud(points.map(_ - mean))
   }
 
-  lazy val gravityCenter = points.reduce(_ + _) * (1.0 / points.length)
+  lazy val mean: Vector2d = points.reduce(_ + _) / points.length
 
-  def calculateSquareError(other: PointCloud): Double = {
+  def squareErrorTo(other: PointCloud): Double = {
     def vectorPowerToTwo(v: Vector2d) = v.x * v.x + v.y * v.y
 
     def minDeltaToAnyGroupPoint(point: Vector2d, group: PointCloud): Double = {
@@ -19,7 +21,7 @@ case class PointCloud(val points: List[Vector2d]) {
     minDeltas.sum / points.length
   }
 
-  def downSample(samples: Int = 100): PointCloud = {
+  def downsample(samples: Int = 100): PointCloud = {
     new PointCloud(util.Random.shuffle(points).take(samples))
   }
 
@@ -29,6 +31,22 @@ case class PointCloud(val points: List[Vector2d]) {
   private def lengthAt(func: Vector2d => Double): Double = {
     val values = points.map(func)
     values.max - values.min
+  }
+
+  def alignByStandardDeviation(other: PointCloud): PointCloud = {
+    val scale = other.standardDeviation /: this.standardDeviation
+    println("Scaling calculated by standard deviation:", scale)
+    PointCloud(points.map(_ *: scale))
+  }
+
+  lazy val standardDeviation: Vector2d = {
+    val devs = points.map(p => {
+      Vector2d(pow(p.x - mean.x, 2), pow(p.y - mean.y, 2))
+    })
+
+    val variance = devs.reduce(_ + _) / devs.length.toDouble
+
+    Vector2d(sqrt(variance.x), sqrt(variance.y))
   }
 
   def toImagePixelArray(pointColor: Int, emptyColor: Int): Array[Int] = {

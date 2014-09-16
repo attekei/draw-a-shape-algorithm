@@ -25,7 +25,7 @@ class PointCloudSpec extends Specification {
     val cloud = PointCloud.fromImagePixelArray(pixels, width, blackColor)
   }
 
-  trait cloudFromVectors(vectors: List[Vector2d]) extends
+  //trait cloudFromVectors(vectors: List[Vector2d]) extends
 
   "Point cloud creation from pixels" should {
     "produce correct points" in new cloudFromPixels {
@@ -40,22 +40,22 @@ class PointCloudSpec extends Specification {
     }
   }
 
-  "Point cloud centering by gravity" should {
+  "Point cloud centering by mean" should {
     "mantain old width & height" in new cloudFromPixels {
-      val centeredCloud = cloud.centerToOrigoByGravity
+      val centeredCloud = cloud.centerByMean
       centeredCloud.width should beCloseTo(cloud.width, 0.01)
       centeredCloud.height should beCloseTo(cloud.height, 0.01)
     }
 
-    "have 0,0 as gravity center" in new cloudFromPixels {
+    "have 0,0 as mean" in new cloudFromPixels {
       // sanity check
-      val oldCenter = cloud.gravityCenter
+      val oldCenter = cloud.mean
       oldCenter.x should not beCloseTo(0, 0.01)
       oldCenter.y should not beCloseTo(0, 0.01)
 
-      val centeredCloud = cloud.centerToOrigoByGravity
+      val centeredCloud = cloud.centerByMean
 
-      val center = centeredCloud.gravityCenter
+      val center = centeredCloud.mean
       center.x should beCloseTo(0, 0.01)
       center.y should beCloseTo(0, 0.01)
     }
@@ -63,11 +63,19 @@ class PointCloudSpec extends Specification {
 
   "Point cloud downsampling" should {
     "should return cloud with correct point count" in new cloudFromPixels {
-      cloud.downSample(2).points.length shouldEqual 2
+      cloud.downsample(2).points.length shouldEqual 2
     }
 
     "not downsample if point count is low" in new cloudFromPixels {
-      cloud.downSample(100).points.toSet shouldEqual cloud.points.toSet
+      cloud.downsample(100).points.toSet shouldEqual cloud.points.toSet
+    }
+  }
+
+  "Standard deviation calculating" should {
+    "produce expected values" in new cloudFromPixels {
+      val deviation = cloud.standardDeviation
+      deviation.x should beCloseTo(106.24918, 0.001)
+      deviation.y should beCloseTo(49.21608, 0.001)
     }
   }
 }

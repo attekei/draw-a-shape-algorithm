@@ -6,36 +6,38 @@ import java.io.File
 import javax.imageio.ImageIO
 import com.xeiam.xchart.{SwingWrapper, Chart}
 import com.xeiam.xchart.StyleManager.{LegendPosition, ChartType}
-import studies.algorithms.Vector2d
 
 object TestPlotter extends App {
   val pathPrefix = "/Users/atte/Pictures/"
-  val sourceImagePath = pathPrefix + "algorithm_source.png"
+  val drawnImagePath = pathPrefix + "algorithm_source.png"
   val modelImagePath = pathPrefix + "algorithm_model.png"
-  val resultImagePath = pathPrefix + "algorithm_result.png"
-  val black = Color.BLACK.getRGB
-  val white = Color.WHITE.getRGB
 
-  val image = ImageIO.read(new File(sourceImagePath))
-  val pixels = getImagePixels(image).toArray
+  val drawnCloud = getCenteredCloud(drawnImagePath)
+  val modelCloud = getCenteredCloud(modelImagePath)
 
-  val cloud = PointCloud.fromImagePixelArray(pixels, image.getWidth, black)
-  val centeredCloud = cloud.centerToOrigoByGravity.downSample(1000)
+  val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud)
 
-  val centeredPoints = centeredCloud.points
+  drawScatterChart(alignedDrawnCloud.points)
 
-  // Create Chart
-  val chart = new Chart(800, 600)
-  chart.getStyleManager().setChartType(ChartType.Scatter)
+  def getCenteredCloud(imagePath: String) = {
+    val black = Color.BLACK.getRGB
 
-  // Customize Chart
-  chart.getStyleManager().setChartTitleVisible(false)
-  chart.getStyleManager().setLegendPosition(LegendPosition.InsideSW)
+    val image = ImageIO.read(new File(imagePath))
+    val imagePixels = getImagePixels(image).toArray
+    val cloud = PointCloud.fromImagePixelArray(imagePixels, image.getWidth, black)
+    cloud.centerByMean
+  }
 
-  // Series
-  chart.addSeries("Gaussian Blob", centeredPoints.map(_.x).toArray, centeredPoints.map(-_.y).toArray);
+  def drawScatterChart(points: List[Vector2d]) = {
+    val chart = new Chart(800, 600)
+    chart.getStyleManager().setChartType(ChartType.Scatter)
+    chart.getStyleManager().setChartTitleVisible(false)
+    chart.getStyleManager().setLegendPosition(LegendPosition.InsideSW)
+    // TODO add after XChart update: chart.getStyleManager().setMarkerSize(3)
 
-  new SwingWrapper(chart).displayChart();
+    chart.addSeries("Aligned cloud", points.map(_.x).toArray, points.map(-_.y).toArray)
+    new SwingWrapper(chart).displayChart()
+  }
 
   def getImagePixels(img: BufferedImage) = {
     for {
