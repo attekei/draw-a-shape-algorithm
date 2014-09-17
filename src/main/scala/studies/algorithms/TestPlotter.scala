@@ -9,7 +9,7 @@ import com.xeiam.xchart.StyleManager.{LegendPosition, ChartType}
 
 object TestPlotter extends App {
   val pathPrefix = "/Users/atte/Pictures/"
-  val drawnImagePath = pathPrefix + "algorithm_source.png"
+  val drawnImagePath = pathPrefix + "algorithm_source_2.png"
   val modelImagePath = pathPrefix + "algorithm_model.png"
 
   val drawnCloud = getCenteredCloud(drawnImagePath)
@@ -17,9 +17,20 @@ object TestPlotter extends App {
 
   val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud)
 
-  alignedDrawnCloud.downsample(100).runCMAES(modelCloud)
+  val dsAlignedDrawnCloud = alignedDrawnCloud.downsample(100)
+  val dsModelCloud = modelCloud.downsample(100)
 
-  drawScatterChart(alignedDrawnCloud.points)
+  val CMAESResult =  dsAlignedDrawnCloud.runCMAES(dsModelCloud)
+  val CMAESAlignedCloud = alignedDrawnCloud.transformByCMAESGuess(CMAESResult)
+
+  println("CMAES result: " + CMAESResult)
+  println("Error in initial: " + dsAlignedDrawnCloud.squareErrorTo(dsModelCloud))
+  println("Error in CMAES aligned: " + dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult).squareErrorTo(dsModelCloud))
+
+  drawScatterChart(Map(
+    "CMAES Aligned cloud" -> CMAESAlignedCloud.points,
+    "Model cloud"   -> modelCloud.points
+  ))
 
   def getCenteredCloud(imagePath: String) = {
     val black = Color.BLACK.getRGB
@@ -30,14 +41,17 @@ object TestPlotter extends App {
     cloud.centerByMean
   }
 
-  def drawScatterChart(points: List[Vector2d]) = {
+  def drawScatterChart(pointSeries: Map[String, List[Vector2d]]) = {
     val chart = new Chart(800, 600)
     chart.getStyleManager().setChartType(ChartType.Scatter)
     chart.getStyleManager().setChartTitleVisible(false)
     chart.getStyleManager().setLegendPosition(LegendPosition.InsideSW)
     // TODO add after XChart update: chart.getStyleManager().setMarkerSize(3)
 
-    chart.addSeries("Aligned cloud", points.map(_.x).toArray, points.map(-_.y).toArray)
+    pointSeries.map { case (name: String, points: List[Vector2d]) =>
+      chart.addSeries(name, points.map(_.x).toArray, points.map(-_.y).toArray)
+    }
+
     new SwingWrapper(chart).displayChart()
   }
 

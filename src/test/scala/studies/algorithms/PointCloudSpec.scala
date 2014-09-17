@@ -78,4 +78,26 @@ class PointCloudSpec extends Specification {
       deviation.y should beCloseTo(49.21608, 0.001)
     }
   }
+
+  "Square error calculation" should {
+    "produce very small value if both clouds are equal" in new cloudFromPixels {
+      println("Error between clouds: ", cloud.squareErrorTo(cloud))
+      cloud.squareErrorTo(cloud) should beCloseTo(0.0, 0.0001)
+    }
+
+    "produce very big value if scale of clouds is very different" in new cloudFromPixels {
+      val biggerCloud = PointCloud(cloud.points.map(_ * 10))
+      cloud.squareErrorTo(biggerCloud) should beGreaterThan(1000000.0)
+    }
+
+    "produce small value if there is a little translation between clouds" in new cloudFromPixels {
+      val translatedCloud = PointCloud(cloud.points.map(_ + Vector2d(2, 2)))
+      cloud.squareErrorTo(translatedCloud) should beBetween(1.0,100.0)
+    }
+
+    "produce small value if there is a little rotation between clouds" in new cloudFromPixels {
+      val rotatedCloud = PointCloud(cloud.points.map(_.rotateAroundOrigin(math.Pi / 180)))
+      cloud.squareErrorTo(rotatedCloud) should beBetween(1.0,100.0)
+    }
+  }
 }
