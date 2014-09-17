@@ -22,10 +22,16 @@ object TestPlotter extends App {
 
   val CMAESResult =  dsAlignedDrawnCloud.runCMAES(dsModelCloud)
   val CMAESAlignedCloud = alignedDrawnCloud.transformByCMAESGuess(CMAESResult)
+  val dsCMAESAlignedCloud = dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult)
 
-  println("CMAES result: " + CMAESResult)
-  println("Error in initial: " + dsAlignedDrawnCloud.squareErrorTo(dsModelCloud))
-  println("Error in CMAES aligned: " + dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult).squareErrorTo(dsModelCloud))
+  println("Result of CMAES: " + CMAESResult)
+  println("Square error before CMAES: " + dsAlignedDrawnCloud.squareErrorTo(dsModelCloud))
+  println("Square error after CMAES: " + dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult).squareErrorTo(dsModelCloud))
+
+  drawScatterChart(Map(
+    "CMAES Aligned cloud (downsampled)" -> dsCMAESAlignedCloud.points,
+    "Model cloud (downsampled)"   -> dsModelCloud.points
+  ))
 
   drawScatterChart(Map(
     "CMAES Aligned cloud" -> CMAESAlignedCloud.points,
