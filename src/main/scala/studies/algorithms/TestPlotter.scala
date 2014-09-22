@@ -27,6 +27,7 @@ object TestPlotter extends App {
   println("Result of CMAES: " + CMAESResult)
   println("Square error before CMAES: " + dsAlignedDrawnCloud.squareErrorTo(dsModelCloud))
   println("Square error after CMAES: " + dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult).squareErrorTo(dsModelCloud))
+  println("Image difference in percents (for presenting to user): " + "%1.2f" format dsAlignedDrawnCloud.diffInPercentsTo(dsModelCloud))
 
   drawScatterChart(Map(
     "CMAES Aligned cloud (downsampled)" -> dsCMAESAlignedCloud.points,
@@ -34,9 +35,12 @@ object TestPlotter extends App {
   ))
 
   drawScatterChart(Map(
-    "CMAES Aligned cloud" -> CMAESAlignedCloud.points,
+    "Original drawn cloud" -> alignedDrawnCloud.points,
+    "CMAES Aligned drawn cloud" -> CMAESAlignedCloud.points,
     "Model cloud"   -> modelCloud.points
   ))
+
+
 
   def getCenteredCloud(imagePath: String) = {
     val black = Color.BLACK.getRGB

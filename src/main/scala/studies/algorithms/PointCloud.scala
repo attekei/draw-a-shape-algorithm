@@ -31,6 +31,10 @@ case class PointCloud(points: List[Vector2d]) {
     (thisMinDeltas.sum + otherMinDeltas.sum) / points.length
   }
 
+  def diffInPercentsTo(other: PointCloud, diffConstant: Int = 100): Double = {
+    100 * exp(-0.5 * squareErrorTo(other) / diffConstant)
+  }
+
   def downsample(samples: Int = 100): PointCloud = {
     new PointCloud(util.Random.shuffle(points).take(samples))
   }
