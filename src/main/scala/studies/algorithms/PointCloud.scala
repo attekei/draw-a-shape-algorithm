@@ -36,7 +36,19 @@ case class PointCloud(points: List[Vector2d]) {
   }
 
   def downsample(samples: Int = 100): PointCloud = {
-    new PointCloud(util.Random.shuffle(points).take(samples))
+    def takeEveryNth(l: List[Vector2d], n: Int) = {
+      for (step <- Range(start = n - 1, end = l.length, step = n))
+      yield l(step)
+    }
+
+    //Do not downsample if not necessary
+    val downsamplingNotNeeded = points.length <= samples
+    if (downsamplingNotNeeded) return this
+
+    val n = points.length / samples
+    val reducedPoints = takeEveryNth(points, n).toList
+
+    new PointCloud(util.Random.shuffle(reducedPoints).take(samples))
   }
 
   def width = lengthAt(_.x)
