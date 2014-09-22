@@ -42,7 +42,7 @@ Algorithm can be easily used from an Android app:
   // show match result etc.
 ```
 
-## Setup
+## Setup project
 
 #### Clone repository
 
@@ -56,9 +56,9 @@ Intellij IDEA toolbar: `VCS -> Checkout from Version Control -> Git` Repo addres
 
 Run `sbt gen-idea` in project folder.
 
-#### Build for Android
+## Build for Android
 
-Run `sbt proguard:proguard` to build the JAR file. Copy it from `target/scala-2.11/proguard/drawing-app-algoritm_2.11-1.0.jar` to Android project `app/lib` directory and replace the existing jar.
+Run `sbt proguard:proguard` in project folder to build the JAR file. Copy it from `target/scala-2.11/proguard/drawing-app-algoritm_2.11-1.0.jar` to Android project `app/lib` directory and replace the existing jar.
 
 ## Licence
 
