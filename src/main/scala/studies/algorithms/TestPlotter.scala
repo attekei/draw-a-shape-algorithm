@@ -9,8 +9,8 @@ import com.xeiam.xchart.StyleManager.{LegendPosition, ChartType}
 
 object TestPlotter extends App {
   val pathPrefix = "/Users/atte/Pictures/"
-  val drawnImagePath = pathPrefix + "algorithm_source_2.png"
-  val modelImagePath = pathPrefix + "algorithm_model.png"
+  val drawnImagePath = pathPrefix + "algorithm_source_3_1.png"
+  val modelImagePath = pathPrefix + "algorithm_source_3_2.png"
 
   val drawnCloud = getCenteredCloud(drawnImagePath)
   val modelCloud = getCenteredCloud(modelImagePath)

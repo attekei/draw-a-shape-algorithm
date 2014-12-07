@@ -1,3 +1,10 @@
+import com.typesafe.sbt._
+
+import org.scalatra.sbt._
+import ScalateKeys._
+
+val ScalatraVersion = "2.3.0"
+
 name := "drawing-app-algoritm"
  
 version := "1.0"
@@ -10,11 +17,41 @@ libraryDependencies += "com.xeiam.xchart" % "xchart" % "2.3.0"
 
 libraryDependencies += "org.apache.commons" %	"commons-math3"	% "3.3"
 
+libraryDependencies ++= Seq(
+  "org.scalatra" %% "scalatra" % ScalatraVersion,
+  "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
+  "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
+  "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
+  "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
+  "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container;runtime;provided",
+  "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container;runtime",
+  "javax.servlet" % "javax.servlet-api" % "3.1.0" % "runtime;compile;provided;test" artifacts Artifact("javax.servlet-api", "jar", "jar")
+)
+
+SbtStartScript.startScriptForClassesSettings
+
+ScalatraPlugin.scalatraWithJRebel
+
+scalateSettings
+
+scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
+  Seq(
+    TemplateConfig(
+      base / "webapp" / "WEB-INF" / "templates",
+      Seq.empty,  /* default imports should be added here */
+      Seq(
+        Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)
+      ),  /* add extra bindings here */
+      Some("templates")
+    )
+  )
+}
+
 proguardSettings
 
 ProguardKeys.options in Proguard ++= Seq(
   "-dontnote",
-  // http://viktorbresan.blogspot.fi/2012/10/conversion-to-dalvik-format-failed-with.html
+//  // http://viktorbresan.blogspot.fi/2012/10/conversion-to-dalvik-format-failed-with.html
   "-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable",
   "-dontobfuscate",
   "-keep class studies.algorithms.** { *; }")
