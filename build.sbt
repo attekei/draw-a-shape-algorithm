@@ -1,7 +1,10 @@
 import com.typesafe.sbt._
 
 import org.scalatra.sbt._
+import com.typesafe.sbt.SbtStartScript
 import ScalateKeys._
+
+seq(SbtStartScript.startScriptForClassesSettings: _*)
 
 val ScalatraVersion = "2.3.0"
 
@@ -22,13 +25,11 @@ libraryDependencies ++= Seq(
   "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
   "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
   "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
-  "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
+  "ch.qos.logback" % "logback-classic" % "1.0.13" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container;runtime;provided",
-  "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container;runtime",
+  "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container;runtime;compile",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "runtime;compile;provided;test" artifacts Artifact("javax.servlet-api", "jar", "jar")
 )
-
-SbtStartScript.startScriptForClassesSettings
 
 ScalatraPlugin.scalatraWithJRebel
 
@@ -59,3 +60,5 @@ ProguardKeys.options in Proguard ++= Seq(
 instrumentSettings
 
 coverallsSettings
+
+mainClass in Compile := Some("studies.algorithms.api.JettyLauncher")

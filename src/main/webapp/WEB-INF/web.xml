@@ -9,7 +9,17 @@
     That class should implement org.scalatra.LifeCycle.  Your app can be
     configured in Scala code there.
   -->
-  <listener>
-    <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
-  </listener>
+
+    <context-param>
+        <param-name>
+            org.scalatra.LifeCycle
+        </param-name>
+        <param-value>
+            studies.algorithms.api.ScalatraBootstrap
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
+      </listener>
 </web-app>

@@ -1,5 +1,7 @@
+package studies.algorithms.api
+
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.servlet.{ DefaultServlet, ServletContextHandler }
+import org.eclipse.jetty.servlet.DefaultServlet
 import org.eclipse.jetty.webapp.WebAppContext
 import org.scalatra.servlet.ScalatraListener
 
@@ -15,6 +17,7 @@ object JettyLauncher {
     context.addServlet(classOf[studies.algorithms.api.HerokuApp], "/*")
     context.addServlet(classOf[DefaultServlet], "/")
 
+    context.setInitParameter(ScalatraListener.LifeCycleKey, "studies.algorithms.api.ScalatraBootstrap")
     context.setEventListeners(Array(new ScalatraListener))
 
     server.setHandler(context)
