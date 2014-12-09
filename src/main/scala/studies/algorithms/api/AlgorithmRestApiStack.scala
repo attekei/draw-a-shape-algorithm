@@ -1,13 +1,14 @@
 package studies.algorithms.api
 
 import org.scalatra._
+import org.scalatra.json._
 import scalate.ScalateSupport
 import org.fusesource.scalate.{ TemplateEngine, Binding }
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import javax.servlet.http.HttpServletRequest
 import collection.mutable
 
-trait HerokuExampleStack extends ScalatraServlet with ScalateSupport {
+trait AlgorithmRestApiStack extends ScalatraServlet with ScalateSupport with NativeJsonSupport {
 
   /* wire up the precompiled templates */
   override protected def defaultTemplatePath: List[String] = List("/WEB-INF/templates/views")
@@ -23,7 +24,6 @@ trait HerokuExampleStack extends ScalatraServlet with ScalateSupport {
   override protected def templateAttributes(implicit request: HttpServletRequest): mutable.Map[String, Any] = {
     super.templateAttributes ++ mutable.Map.empty // Add extra attributes here, they need bindings in the build file
   }
-  
 
   notFound {
     // remove content type in case it was set through an action
