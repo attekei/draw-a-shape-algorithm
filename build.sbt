@@ -2,7 +2,6 @@ import com.typesafe.sbt._
 
 import org.scalatra.sbt._
 import com.typesafe.sbt.SbtStartScript
-import ScalateKeys._
 
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
@@ -22,10 +21,10 @@ libraryDependencies += "org.apache.commons" %	"commons-math3"	% "3.3"
 
 libraryDependencies ++= Seq(
   "org.scalatra" %% "scalatra" % ScalatraVersion,
-  "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
   "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
-  "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
   "org.scalatra" %% "scalatra-json" % ScalatraVersion,
+  "org.scalatra" %% "scalatra-swagger"  % ScalatraVersion,
+  "com.wordnik"  %  "swagger-annotations" % "1.3.2",
   "com.novus" %% "salat" % "1.9.9",
   "org.json4s"   %% "json4s-jackson" % "3.2.9",
   "ch.qos.logback" % "logback-classic" % "1.0.13" % "runtime",
@@ -35,21 +34,6 @@ libraryDependencies ++= Seq(
 )
 
 ScalatraPlugin.scalatraWithJRebel
-
-scalateSettings
-
-scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-  Seq(
-    TemplateConfig(
-      base / "webapp" / "WEB-INF" / "templates",
-      Seq.empty,  /* default imports should be added here */
-      Seq(
-        Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)
-      ),  /* add extra bindings here */
-      Some("templates")
-    )
-  )
-}
 
 proguardSettings
 

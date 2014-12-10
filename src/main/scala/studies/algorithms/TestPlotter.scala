@@ -6,6 +6,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import com.xeiam.xchart.{SwingWrapper, Chart}
 import com.xeiam.xchart.StyleManager.{LegendPosition, ChartType}
+import java.net.URI
 
 object TestPlotter extends App {
   val pathPrefix = "/Users/atte/Pictures/"
@@ -43,6 +44,15 @@ object TestPlotter extends App {
 
 
   def getCenteredCloud(imagePath: String) = {
+    val black = Color.BLACK.getRGB
+
+    val image = ImageIO.read(new File(imagePath))
+    val imagePixels = getImagePixels(image).toArray
+    val cloud = PointCloud.fromImagePixelArray(imagePixels, image.getWidth, black)
+    cloud.centerByMean
+  }
+
+  def getCenteredCloud(imagePath: URI) = {
     val black = Color.BLACK.getRGB
 
     val image = ImageIO.read(new File(imagePath))
