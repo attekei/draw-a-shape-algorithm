@@ -20,7 +20,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
   val getImages =
     (apiOperation[List[Image]]("getImages")
       summary "Get list of images"
-      notes "About the return json: if 'is_self_contained' is true, the image is contained in the app. If it is false, the 'path' value should be valid URL.")
+      notes "If 'is_self_contained' is true, you can find the images from /image-files folder, and the `path` contains only the name of image. Otherwise the image is hosted somewhere else, and the path contains the full URL of image.")
 //parameter queryParam[Option[String]]("name").description("A name to search for")
   post("/images", operation(getImages)) {
     contentType = formats("json")
