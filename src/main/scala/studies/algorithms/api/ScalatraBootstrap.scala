@@ -2,7 +2,7 @@ package studies.algorithms.api
 
 import javax.servlet.ServletContext
 
-import com.mongodb.casbah.MongoClient
+import com.mongodb.casbah.{MongoClientURI, MongoClient}
 import org.scalatra._
 
 class ScalatraBootstrap extends LifeCycle {
@@ -12,9 +12,11 @@ class ScalatraBootstrap extends LifeCycle {
 
     // stupid temporary test
     val mongoLabUri = Option(System.getenv("MONGOLAB_URI"))
-    val mongoClient =  if (mongoLabUri.isDefined) MongoClient(mongoLabUri.get) else MongoClient()
-    val imagesColl = mongoClient("drawing-app-algorithm")("images")
-    val userEstimatesColl = mongoClient("drawing-app-algorithm")("user-estimates")
+    println("Uri:", mongoLabUri)
+    val mongoClient =  if (mongoLabUri.isDefined) MongoClient(MongoClientURI(mongoLabUri.get)) else MongoClient()
+    val databaseName = if (mongoLabUri.isDefined) "heroku_app32301077" else "drawing-app-algorithm"
+    val imagesColl = mongoClient(databaseName)("images")
+    val userEstimatesColl = mongoClient(databaseName)("user-estimates")
 
 
     context.mount(new AlgorithmRestApi(imagesColl, userEstimatesColl), "/*")
