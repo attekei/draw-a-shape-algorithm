@@ -38,10 +38,11 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
   val addComparisionResult =
     (apiOperation[BasicResult]("addcompresult")
       summary "Add user estimate of correspondence of images."
+      notes "You probably want to run this after you have made the comparision."
       consumes "x-www-form-urlencoded"
       parameter queryParam[String]("image").description("The slug of the image.")
-      parameter queryParam[Double]("square_error").description("Square error, received from `compare`.")
-      parameter queryParam[Double]("user_estimate").description("User error, value between 0.1. E.g. if user thinks that image is 20% match, then this is 0.2"))
+      parameter queryParam[Double]("square_error").description("Square error")
+      parameter queryParam[Double]("user_estimate").description("User estimate. Value between 0 and 1. Example: if user thinks that image is 20% match, then value is 0.2."))
 
   post("/user-estimates/add", operation(addComparisionResult)) {
     contentType = formats("json")
@@ -82,7 +83,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
   val compare =
     (apiOperation[ComparisionResult]("compare")
       summary "Run the comparision between selected image and given points."
-      notes "Square error is returned for adding new comparision results with `/comparisions-result/add`."
+      notes "This runs the comparision algorithm. It uses user estimates for the calculation of correspondence. In result, the correspondence is in `systemEstimate`. The transformations array is in format [xTranslation, yTranslation, xScale, yScale, rotation]."
       parameter queryParam[String]("image").description("The slug of the image.")
       parameter queryParam[String]("points").description("The (x,y) point pairs as a space separated number list. For example \"1 50 2 60 3 10\" means points (1,50), (2,60) and (3,10)."))
 
@@ -115,7 +116,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
 
     val systemEstimate = math.exp(-0.5 * squareError / diffConstant)
 
-    ComparisionResult(squareError, systemEstimate, diffConstant)
+    ComparisionResult(squareError, systemEstimate, diffConstant, CMAESResult.toDoubleArray)
   }
 
   def getImageFromSlug(slug: String) = {
