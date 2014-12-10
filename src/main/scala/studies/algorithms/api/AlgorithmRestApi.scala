@@ -101,7 +101,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       .grouped(2)
       .map(arr => Vector2d(arr(0).toDouble,arr(1).toDouble)).toList
 
-    val drawnCloud = PointCloud(drawnPixels)
+    val drawnCloud = PointCloud(drawnPixels).centerByMean
 
     val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud).downsample(100)
     val finalModelCloud = modelCloud.downsample(100)
