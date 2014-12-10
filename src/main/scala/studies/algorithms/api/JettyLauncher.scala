@@ -13,8 +13,7 @@ object JettyLauncher {
     val context = new WebAppContext()
     context.setContextPath("/")
     context.setResourceBase("src/main/webapp")
-    
-    context.addServlet(classOf[studies.algorithms.api.AlgorithmRestApi], "/*")
+
     context.addServlet(classOf[DefaultServlet], "/")
 
     context.setInitParameter(ScalatraListener.LifeCycleKey, "studies.algorithms.api.ScalatraBootstrap")
