@@ -1,5 +1,11 @@
 package studies.algorithms.api
 
+import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.File
+import java.net.URI
+import javax.imageio.ImageIO
+
 import com.mongodb.DBObject
 import com.mongodb.casbah.MongoCollection
 import com.mongodb.casbah.commons.MongoDBObject
@@ -22,7 +28,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       summary "Get list of images"
       notes "If 'is_self_contained' is true, you can find the images from /image-files folder, and the `path` contains only the name of image. Otherwise the image is hosted somewhere else, and the path contains the full URL of image.")
 //parameter queryParam[Option[String]]("name").description("A name to search for")
-  post("/images", operation(getImages)) {
+  get("/images", operation(getImages)) {
     contentType = formats("json")
     imagesColl.find().map(Image.fromDbObject).toSeq
   }
@@ -44,7 +50,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       parameter queryParam[Double]("square_error").description("Square error")
       parameter queryParam[Double]("user_estimate").description("User estimate. Value between 0 and 1. Example: if user thinks that image is 20% match, then value is 0.2."))
 
-  post("/user-estimates/add", operation(addComparisionResult)) {
+  get("/user-estimates/add", operation(addComparisionResult)) {
     contentType = formats("json")
     if (params.get("image") == None || params.get("square_error") == None || params.get("user_estimate") == None)
       halt(400, "error" -> "Some parameters missing")
@@ -58,7 +64,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       summary "Lists entered estimates of given image."
       parameter queryParam[String]("image").description("The slug of the image."))
 
-  post("/user-estimates/list", operation(listComparisionResults)) {
+  get("/user-estimates/list", operation(listComparisionResults)) {
     contentType = formats("json")
     val imageId = getImageOidFromSlug(params("image"))
     val query = MongoDBObject("image_id" -> imageId)
@@ -71,7 +77,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       summary "Clears all estimates of given image."
       parameter queryParam[String]("image").description("The slug of the image."))
 
-  post("/user-estimates/clear", operation(clearComparisionResult)) {
+  get("/user-estimates/clear", operation(clearComparisionResult)) {
     contentType = formats("json")
     if (params.get("image") == None) halt(400, "error" -> "Some parameters missing")
     val imageId = getImageOidFromSlug(params("image"))
@@ -87,23 +93,25 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       parameter queryParam[String]("image").description("The slug of the image.")
       parameter queryParam[String]("points").description("The (x,y) point pairs as a space separated number list. For example \"1 50 2 60 3 10\" means points (1,50), (2,60) and (3,10)."))
 
-  post("/compare", operation(compare)) {
+  get("/compare", operation(compare)) {
     contentType = formats("json")
     if (params.get("image") == None || params.get("points") == None) halt(400, "error" -> "Some parameters missing")
 
     val image = getImageFromSlug(params("image"))
     val imagePath = servletContext.getResource("/image-files/" + image.file.path).toURI
 
-    val modelCloud = TestPlotter.getCenteredCloud(imagePath)
+    val nonCenteredModelCloud = getCloudFromPath(imagePath)
+    val modelCloud = nonCenteredModelCloud.centerByMean
 
     val drawnPixels = params("points")
       .split(" ")
       .grouped(2)
       .map(arr => Vector2d(arr(0).toDouble,arr(1).toDouble)).toList
 
-    val drawnCloud = PointCloud(drawnPixels).centerByMean
+    val nonCenteredDrawnCloud = PointCloud(drawnPixels)
+    val drawnCloud = nonCenteredDrawnCloud.centerByMean
 
-    val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud).downsample(100)
+    val alignedDrawnCloud = drawnCloud.scaleByStandardDeviation(modelCloud).downsample(100)
     val finalModelCloud = modelCloud.downsample(100)
 
     val CMAESResult = alignedDrawnCloud.runCMAES(finalModelCloud)
@@ -116,7 +124,29 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
 
     val systemEstimate = math.exp(-0.5 * squareError / diffConstant)
 
-    ComparisionResult(squareError, systemEstimate, diffConstant, CMAESResult.toDoubleArray)
+    ComparisionResult(
+      square_error = squareError,
+      system_estimate = systemEstimate,
+      used_diff_constant = diffConstant,
+      drawing_mean = nonCenteredDrawnCloud.mean.toArray,
+      model_mean = nonCenteredModelCloud.mean.toArray,
+      drawing_std_dev_scale = drawnCloud.standardDeviation.toArray,
+      cmaes_transformations = CMAESResult.toDoubleArray)
+  }
+
+  def getCloudFromPath(imagePath: URI) = {
+    val black = Color.BLACK.getRGB
+
+    val image = ImageIO.read(new File(imagePath))
+    val imagePixels = getImagePixels(image).toArray
+    PointCloud.fromImagePixelArray(imagePixels, image.getWidth, black)
+  }
+
+  def getImagePixels(img: BufferedImage) = {
+    for {
+      y <- 0 until img.getHeight()
+      x <- 0 until img.getWidth()
+    } yield img.getRGB(x, y)
   }
 
   def getImageFromSlug(slug: String) = {

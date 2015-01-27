@@ -28,6 +28,9 @@ case class AnalysisResult(image_id: ObjectId, square_error: Double, user_estimat
   extends Model[AnalysisResult]
 object AnalysisResult extends ModelCompanion[AnalysisResult]
 
-case class ComparisionResult(squareError: Double, systemEstimate: Double, usedDiffConstant: Double, transformations: Array[Double])
+case class ComparisionResult(square_error: Double, system_estimate: Double, used_diff_constant: Double,
+                             drawing_mean: Array[Double], model_mean: Array[Double], drawing_std_dev_scale: Array[Double],
+                             cmaes_transformations: Array[Double])
+
 case class AnalysisResultOutput(square_error: Double, user_estimate: Double)
 case class BasicResult(status: String)

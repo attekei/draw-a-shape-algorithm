@@ -24,6 +24,8 @@ case class Vector2d(val x: Double, val y: Double) {
 
   override def toString = "(" + x + ", " + y + ")"
 
+  def toArray = Array(x, y)
+
   def rotateAroundOrigin(angle: Double): Vector2d = {
     Vector2d(x * cos(angle) - y * sin(angle), x * sin(angle) + y * cos(angle))
   }

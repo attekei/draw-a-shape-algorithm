@@ -16,7 +16,7 @@ object TestPlotter extends App {
   val drawnCloud = getCenteredCloud(drawnImagePath)
   val modelCloud = getCenteredCloud(modelImagePath)
 
-  val alignedDrawnCloud = drawnCloud.alignByStandardDeviation(modelCloud)
+  val alignedDrawnCloud = drawnCloud.scaleByStandardDeviation(modelCloud)
 
   val dsAlignedDrawnCloud = alignedDrawnCloud.downsample(100)
   val dsModelCloud = modelCloud.downsample(100)

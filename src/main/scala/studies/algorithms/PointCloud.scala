@@ -59,7 +59,7 @@ case class PointCloud(points: List[Vector2d]) {
     values.max - values.min
   }
 
-  def alignByStandardDeviation(other: PointCloud): PointCloud = {
+  def scaleByStandardDeviation(other: PointCloud): PointCloud = {
     val scale = other.standardDeviation / this.standardDeviation
     PointCloud(points.map(_ * scale))
   }
