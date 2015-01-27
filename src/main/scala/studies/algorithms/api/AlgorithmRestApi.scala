@@ -93,7 +93,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       parameter queryParam[String]("image").description("The slug of the image.")
       parameter queryParam[String]("points").description("The (x,y) point pairs as a space separated number list. For example \"1 50 2 60 3 10\" means points (1,50), (2,60) and (3,10)."))
 
-  get("/compare", operation(compare)) {
+  post("/compare", operation(compare)) {
     contentType = formats("json")
     if (params.get("image") == None || params.get("points") == None) halt(400, "error" -> "Some parameters missing")
 
@@ -164,7 +164,6 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
   }
 
   def calculateDiffConstant(imageId: ObjectId) = {
-
     val query = MongoDBObject("image_id" -> imageId)
     val userEstimates = userEstimatesColl.find(query).map(AnalysisResult.fromDbObject).toSeq
 
