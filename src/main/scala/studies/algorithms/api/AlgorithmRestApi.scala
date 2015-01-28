@@ -50,7 +50,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       parameter queryParam[Double]("square_error").description("Square error")
       parameter queryParam[Double]("user_estimate").description("User estimate. Value between 0 and 1. Example: if user thinks that image is 20% match, then value is 0.2."))
 
-  get("/user-estimates/add", operation(addComparisionResult)) {
+  post("/user-estimates/add", operation(addComparisionResult)) {
     contentType = formats("json")
     if (params.get("image") == None || params.get("square_error") == None || params.get("user_estimate") == None)
       halt(400, "error" -> "Some parameters missing")
@@ -64,7 +64,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       summary "Lists entered estimates of given image."
       parameter queryParam[String]("image").description("The slug of the image."))
 
-  get("/user-estimates/list", operation(listComparisionResults)) {
+  post("/user-estimates/list", operation(listComparisionResults)) {
     contentType = formats("json")
     val imageId = getImageOidFromSlug(params("image"))
     val query = MongoDBObject("image_id" -> imageId)
@@ -77,7 +77,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       summary "Clears all estimates of given image."
       parameter queryParam[String]("image").description("The slug of the image."))
 
-  get("/user-estimates/clear", operation(clearComparisionResult)) {
+  post("/user-estimates/clear", operation(clearComparisionResult)) {
     contentType = formats("json")
     if (params.get("image") == None) halt(400, "error" -> "Some parameters missing")
     val imageId = getImageOidFromSlug(params("image"))
