@@ -60,8 +60,12 @@ case class PointCloud(points: List[Vector2d]) {
   }
 
   def scaleByStandardDeviation(other: PointCloud): PointCloud = {
-    val scale = other.standardDeviation / this.standardDeviation
+    val scale = standardDeviationScale(other)
     PointCloud(points.map(_ * scale))
+  }
+
+  def standardDeviationScale(other: PointCloud): Vector2d = {
+    other.standardDeviation / this.standardDeviation
   }
 
   lazy val standardDeviation: Vector2d = {

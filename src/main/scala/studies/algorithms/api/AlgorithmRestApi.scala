@@ -130,7 +130,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
       used_diff_constant = diffConstant,
       drawing_mean = nonCenteredDrawnCloud.mean.toArray,
       model_mean = nonCenteredModelCloud.mean.toArray,
-      drawing_std_dev_scale = drawnCloud.standardDeviation.toArray,
+      drawing_std_dev_scale = drawnCloud.standardDeviationScale(modelCloud).toArray,
       cmaes_transformations = CMAESResult.toDoubleArray)
   }
 
