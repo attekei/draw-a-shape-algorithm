@@ -10,8 +10,8 @@ import java.net.URI
 
 object TestPlotter extends App {
   val pathPrefix = "/Users/atte/Pictures/"
-  val drawnImagePath = pathPrefix + "algorithm_source_3_1.png"
-  val modelImagePath = pathPrefix + "algorithm_source_3_2.png"
+  val drawnImagePath = pathPrefix + "apple_drawing.png"
+  val modelImagePath = pathPrefix + "apple_model.png"
 
   val drawnCloud = getCenteredCloud(drawnImagePath)
   val modelCloud = getCenteredCloud(modelImagePath)

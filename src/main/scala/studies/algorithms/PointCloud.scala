@@ -126,10 +126,11 @@ case class PointCloud(points: List[Vector2d]) {
   }
 
   def transformByCMAESGuess(guess: CMAESGuess): PointCloud = {
-    val translatedPoints = this.points.map(_ + guess.translation)
-    val scaledPoints = translatedPoints.map(_ * guess.scale)
-    val rotatedPoints = scaledPoints.map(_.rotateAroundOrigin(guess.rotation))
-    PointCloud(rotatedPoints)
+    val transformedPoints = this.points.map((point: Vector2d) => {
+      (point * guess.scale).rotateAroundOrigin(guess.rotation) + guess.translation
+    });
+
+    PointCloud(transformedPoints)
   }
 }
 
