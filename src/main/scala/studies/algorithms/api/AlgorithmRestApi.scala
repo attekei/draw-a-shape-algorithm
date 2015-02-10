@@ -89,7 +89,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
   val compare =
     (apiOperation[ComparisionResult]("compare")
       summary "Run the comparision between selected image and given points."
-      notes "This runs the comparision algorithm. It uses user estimates for the calculation of correspondence. In result, the correspondence is in `systemEstimate`. The transformations array is in format [xTranslation, yTranslation, xScale, yScale, rotation]."
+      notes "This runs the comparision algorithm. It uses user estimates for the calculation of correspondence. In result, the correspondence is in `systemEstimate`. The transformations array is in format [xTranslation, yTranslation, scale, rotation]."
       parameter queryParam[String]("image").description("The slug of the image.")
       parameter queryParam[String]("points").description("The (x,y) point pairs as a space separated number list. For example \"1 50 2 60 3 10\" means points (1,50), (2,60) and (3,10)."))
 

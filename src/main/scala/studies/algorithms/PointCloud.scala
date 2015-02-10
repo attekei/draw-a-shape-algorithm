@@ -70,12 +70,13 @@ case class PointCloud(points: List[Vector2d]) {
 
   lazy val standardDeviation: Vector2d = {
     val devs = points.map(p => {
-      Vector2d(pow(p.x - mean.x, 2), pow(p.y - mean.y, 2))
+      pow(p.x - mean.x, 2) + pow(p.y - mean.y, 2)
     })
 
     val variance = devs.reduce(_ + _) / devs.length.toDouble
+    val stdDev = sqrt(variance)
 
-    Vector2d(sqrt(variance.x), sqrt(variance.y))
+    Vector2d(stdDev, stdDev)
   }
 
   def toImagePixelArray(pointColor: Int, emptyColor: Int): Array[Int] = {
@@ -128,7 +129,7 @@ case class PointCloud(points: List[Vector2d]) {
   def transformByCMAESGuess(guess: CMAESGuess): PointCloud = {
     val transformedPoints = this.points.map((point: Vector2d) => {
       (point * guess.scale).rotateAroundOrigin(guess.rotation) + guess.translation
-    });
+    })
 
     PointCloud(transformedPoints)
   }

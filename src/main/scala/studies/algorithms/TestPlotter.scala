@@ -36,8 +36,9 @@ object TestPlotter extends App {
   ))
 
   drawScatterChart(Map(
-    "Original drawn cloud" -> alignedDrawnCloud.points,
-    "CMAES Aligned drawn cloud" -> CMAESAlignedCloud.points,
+    "Original drawn cloud" -> drawnCloud.points,
+    "Aligned drawn cloud" -> alignedDrawnCloud.points,
+    "CMAES aligned cloud" -> CMAESAlignedCloud.points,
     "Model cloud"   -> modelCloud.points
   ))
 
