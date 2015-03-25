@@ -8,7 +8,7 @@ seq(SbtStartScript.startScriptForClassesSettings: _*)
 val ScalatraVersion = "2.3.0"
 
 name := "drawing-app-algoritm"
- 
+
 version := "1.0"
 
 scalaVersion := "2.11.0"
@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
   "org.scalatra" %% "scalatra-json" % ScalatraVersion,
   "org.scalatra" %% "scalatra-swagger"  % ScalatraVersion,
   "com.wordnik"  %  "swagger-annotations" % "1.3.2",
-  "com.novus" %% "salat" % "1.9.9",
+  "com.novus" %% "salat-util" % "1.9.9",
+  "com.novus" %% "salat-core" % "1.9.9",
   "org.json4s"   %% "json4s-jackson" % "3.2.9",
   "ch.qos.logback" % "logback-classic" % "1.0.13" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container;runtime;provided",

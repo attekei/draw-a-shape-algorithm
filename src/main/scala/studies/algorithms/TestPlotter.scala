@@ -9,20 +9,20 @@ import com.xeiam.xchart.StyleManager.{LegendPosition, ChartType}
 import java.net.URI
 
 object TestPlotter extends App {
-  val pathPrefix = "/Users/atte/Pictures/"
+  val pathPrefix = "/Users/atte/Pictures/drawing-app-algorithm/"
   val drawnImagePath = pathPrefix + "apple_drawing.png"
   val modelImagePath = pathPrefix + "apple_model.png"
 
   val drawnCloud = getCenteredCloud(drawnImagePath)
   val modelCloud = getCenteredCloud(modelImagePath)
 
-  val alignedDrawnCloud = drawnCloud.scaleByStandardDeviation(modelCloud)
+  val scaledDrawnCloud = drawnCloud.scaleByStandardDeviation(modelCloud)
 
-  val dsAlignedDrawnCloud = alignedDrawnCloud.downsample(100)
+  val dsAlignedDrawnCloud = scaledDrawnCloud.downsample(100)
   val dsModelCloud = modelCloud.downsample(100)
 
   val CMAESResult =  dsAlignedDrawnCloud.runCMAES(dsModelCloud)
-  val CMAESAlignedCloud = alignedDrawnCloud.transformByCMAESGuess(CMAESResult)
+  val CMAESAlignedCloud = scaledDrawnCloud.transformByCMAESGuess(CMAESResult)
   val dsCMAESAlignedCloud = dsAlignedDrawnCloud.transformByCMAESGuess(CMAESResult)
 
   println("Result of CMAES: " + CMAESResult)
@@ -31,14 +31,12 @@ object TestPlotter extends App {
   println("Image difference in percents (for presenting to user): " + "%1.2f" format dsAlignedDrawnCloud.diffInPercentsTo(dsModelCloud))
 
   drawScatterChart(Map(
-    "CMAES Aligned cloud (downsampled)" -> dsCMAESAlignedCloud.points,
-    "Model cloud (downsampled)"   -> dsModelCloud.points
+    "Original drawn cloud" -> drawnCloud.points,
+    "Model cloud"   -> modelCloud.points
   ))
 
   drawScatterChart(Map(
-    "Original drawn cloud" -> drawnCloud.points,
-    "Aligned drawn cloud" -> alignedDrawnCloud.points,
-    "CMAES aligned cloud" -> CMAESAlignedCloud.points,
+    "Scaled and CMAES aligned drawn cloud" -> CMAESAlignedCloud.points,
     "Model cloud"   -> modelCloud.points
   ))
 
