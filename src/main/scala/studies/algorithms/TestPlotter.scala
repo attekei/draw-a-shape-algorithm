@@ -42,8 +42,6 @@ object TestPlotter extends App {
     "Model cloud"   -> modelCloud.points
   ))
 
-
-
   def getCenteredCloud(imagePath: String) = {
     val black = Color.BLACK.getRGB
 

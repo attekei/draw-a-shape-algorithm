@@ -3,7 +3,7 @@ package studies.algorithms
 import scala.math._
 
 //Vector in 2d space
-case class Vector2d(val x: Double, val y: Double) {
+case class Vector2d(x: Double, y: Double) {
   def angleTo(other: Vector2d) = {
     acos(this.dotProduct(other) / this.length / other.length)
   }

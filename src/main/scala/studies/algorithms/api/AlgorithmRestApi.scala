@@ -27,7 +27,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
     (apiOperation[List[Image]]("getImages")
       summary "Get list of images"
       notes "If 'is_self_contained' is true, you can find the images from /image-files folder, and the `path` contains only the name of image. Otherwise the image is hosted somewhere else, and the path contains the full URL of image.")
-//parameter queryParam[Option[String]]("name").description("A name to search for")
+  
   get("/images", operation(getImages)) {
     contentType = formats("json")
     imagesColl.find().map(Image.fromDbObject).toSeq
@@ -41,19 +41,21 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
     serveStaticResource() getOrElse resourceNotFound()
   }
 
-  val addComparisionResult =
+  val addComparisonResult =
     (apiOperation[BasicResult]("addcompresult")
       summary "Add user estimate of correspondence of images."
-      notes "You probably want to run this after you have made the comparision."
+      notes "You probably want to run this after you have made the comparison."
       consumes "x-www-form-urlencoded"
       parameter queryParam[String]("image").description("The slug of the image.")
       parameter queryParam[Double]("square_error").description("Square error")
       parameter queryParam[Double]("user_estimate").description("User estimate. Value between 0 and 1. Example: if user thinks that image is 20% match, then value is 0.2."))
 
-  post("/user-estimates/add", operation(addComparisionResult)) {
+  post("/user-estimates/add", operation(addComparisonResult)) {
     contentType = formats("json")
+
     if (params.get("image") == None || params.get("square_error") == None || params.get("user_estimate") == None)
       halt(400, "error" -> "Some parameters missing")
+
     val imageId = getImageOidFromSlug(params("image"))
     userEstimatesColl.insert(AnalysisResult(imageId, params("square_error").toDouble, params("user_estimate").toDouble).toDbObject)
     BasicResult("success")
@@ -66,6 +68,7 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
 
   post("/user-estimates/list", operation(listComparisionResults)) {
     contentType = formats("json")
+
     val imageId = getImageOidFromSlug(params("image"))
     val query = MongoDBObject("image_id" -> imageId)
     val estims = userEstimatesColl.find(query).map(AnalysisResult.fromDbObject).toSeq
@@ -79,7 +82,9 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
 
   post("/user-estimates/clear", operation(clearComparisionResult)) {
     contentType = formats("json")
+
     if (params.get("image") == None) halt(400, "error" -> "Some parameters missing")
+
     val imageId = getImageOidFromSlug(params("image"))
     val query = MongoDBObject("image_id" -> imageId)
     userEstimatesColl.remove(query)
@@ -95,20 +100,25 @@ class AlgorithmRestApi(imagesColl: MongoCollection, userEstimatesColl: MongoColl
 
   post("/compare", operation(compare)) {
     contentType = formats("json")
+
     if (params.get("image") == None || params.get("points") == None) halt(400, "error" -> "Some parameters missing")
 
     val image = getImageFromSlug(params("image"))
-    val imagePath = servletContext.getResource("/image-files/" + image.file.path).toURI
+    val modelImagePath = servletContext.getResource("/image-files/" + image.file.path).toURI
 
-    val nonCenteredModelCloud = getCloudFromPath(imagePath)
-    val modelCloud = nonCenteredModelCloud.centerByMean
-
-    val drawnPixels = params("points")
+    val drawingPixels = params("points")
       .split(" ")
       .grouped(2)
       .map(arr => Vector2d(arr(0).toDouble,arr(1).toDouble)).toList
 
-    val nonCenteredDrawnCloud = PointCloud(drawnPixels)
+    runComparison(modelImagePath, drawingPixels)
+  }
+
+  def runComparison(modelImagePath: URI, drawingPixels: List[Vector2d]): ComparisionResult = {
+    val nonCenteredModelCloud = getCloudFromPath(modelImagePath)
+    val modelCloud = nonCenteredModelCloud.centerByMean
+
+    val nonCenteredDrawnCloud = PointCloud(drawingPixels)
     val drawnCloud = nonCenteredDrawnCloud.centerByMean
 
     val alignedDrawnCloud = drawnCloud.scaleByStandardDeviation(modelCloud).downsample(100)
