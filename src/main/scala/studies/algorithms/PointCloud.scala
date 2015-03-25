@@ -51,8 +51,8 @@ case class PointCloud(points: List[Vector2d]) {
     new PointCloud(util.Random.shuffle(reducedPoints).take(samples))
   }
 
-  def width = lengthAt(_.x)
-  def height = lengthAt(_.y)
+  lazy val width = lengthAt(_.x)
+  lazy val height = lengthAt(_.y)
 
   private def lengthAt(func: Vector2d => Double): Double = {
     val values = points.map(func)
