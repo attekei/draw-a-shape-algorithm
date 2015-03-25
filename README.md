@@ -1,10 +1,10 @@
 # draw-a-shape-algorithm
 
-[![Build Status](https://travis-ci.org/attrck/drawing-app-algorithm.svg?branch=master)](https://travis-ci.org/attrck/drawing-app-algorithm) [![Coverage Status](https://img.shields.io/coveralls/attrck/drawing-app-algorithm.svg)](https://coveralls.io/r/attrck/drawing-app-algorithm)
+[![Build Status](https://travis-ci.org/attrck/draw-a-shape-algorithm.svg?branch=master)](https://travis-ci.org/attrck/draw-a-shape-algorithm) [![Coverage Status](https://img.shields.io/coveralls/attrck/drawing-app-algorithm.svg)](https://coveralls.io/r/attrck/drawing-app-algorithm)
 
 ## What is this?
 
-* A point cloud based algorithm for comparing similarity of two outline pictures. It manipulates the first picture by translating, rotating and scaling it to match the second picture as well as possible. The resulting  image is as close as the second image as possible and thus usable for further comparision.
+* A point cloud based algorithm for comparing similarity of two outline pictures. It manipulates the first picture by translating, rotating and scaling it to match the second picture as well as possible. The resulting  image is as close as the second image as possible and thus usable for further comparison.
 * An accompanied web API giving an easy-to-access interface to the algorithm. It also provides a mechanism for collecting user estimates of how well images match together.
 
 [Draw a Shape](https://github.com/attrck/draw-a-shape) is a complete Android game which uses the web API for comparing a user drawing and a model image of the drawn shape.
@@ -17,7 +17,8 @@ See `TestPlotter` for an use example.
 
 ### Clone repository
 
-Intellij IDEA toolbar: `VCS -> Checkout from Version Control -> Git` Repo address is `https://github.com/atk-partio/ilmomasiina.git`.
+Intellij IDEA toolbar: `VCS -> Checkout from Version Control -> Git`.
+Repo address is `https://github.com/attrck/draw-a-shape-algorithm`.
 
 ### Install sbt and dependencies
 
